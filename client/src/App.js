@@ -24,7 +24,15 @@ class App extends Component {
     const {myMove, whoWon, command} = this.state.data;
     const emoji = this.getEmoji(myMove);
     if (!myMove) {
-      return <h1>Watting for your move!</h1>
+      return <div>
+        <h1>Watting for your move!</h1>
+        <h2>Commands</h2>
+        <ul>
+          <li>/play/rock</li>
+          <li>/play/paper</li>
+          <li>/play/scissors</li>
+        </ul>
+      </div>
     }
     return (
       <div>
