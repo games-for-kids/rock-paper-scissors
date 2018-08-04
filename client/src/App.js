@@ -13,11 +13,22 @@ class App extends Component {
   };
 
   componentDidMount() {
-    this.socket = io("http://localhost:5000");
+    if (process.env.NODE_ENV == "production") {
+      this.socket = io();
+    } else {
+      this.socket = io("http://localhost:5000");
+    }
     this.socket.on("play", (data) => {
       console.log('got data', data)
       this.setState({data: data, round: this.state.round+1 });
     })
+    // this.socket.on("pong", (data) => {
+    //   console.log('pong', data)
+    // })
+    // // keep alive for heroku
+    // setInterval(()=>this.socket.emit('ping',{status: 'ok'}), 2 * 1000);
+    // window.socket = this.socket
+
   }
 
   render() {
@@ -26,7 +37,13 @@ class App extends Component {
     if (!myMove) {
       return <div>
         <h1>Watting for your move!</h1>
-        <h2>Commands</h2>
+        <h2>Commands (dev)</h2>
+        <ul>
+          <li>http://localhost:5000/play/rock</li>
+          <li>http://localhost:5000/play/paper</li>
+          <li>http://localhost:5000/play/scissors</li>
+        </ul>
+        <h2>Commands (production)</h2>
         <ul>
           <li>/play/rock</li>
           <li>/play/paper</li>

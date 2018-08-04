@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const _ = require('lodash');
 
 const app = express();
@@ -11,14 +12,15 @@ const TIE = "tie";
 const PLAYER = "player";
 const COMPUTER = "computer";
 
-const sockets = {};
 io.on('connection', function (socket) {
-  console.log('a user connected');
-  sockets[socket.id] = socket;
+  console.log('a user connected', socket.id);
   socket.on('disconnect', function () {
     console.log('user disconnected', socket.id);
-    delete sockets[socket.id];
   });
+  // socket.on('ping', (msg) =>  {
+  //   console.log("ping");
+  //   socket.emit("pong", msg)
+  // })
 });
 
 app.get('/play/:command/:algo*?', (req, res) => {
@@ -27,36 +29,42 @@ app.get('/play/:command/:algo*?', (req, res) => {
   const whoWon = checkWin(command, myMove);
   const data = { command, algo, myMove, whoWon };
   console.log(data)
-  res.send({...data});
-  _.each(sockets, (socket,id)=> socket.emit("play", data));
+  res.send({ ...data });
+  io.emit("play", data)
 });
 
-app.get("/api/hello", (req, res)=> {
-  res.send({express: "hello world!"});
-})
 
+///// FOR PRODUCTION /////
+app.use(express.static(path.resolve(__dirname, '..', 'client', 'build')));
 
+app.get('/', (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+});
+
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'client', 'build', `.${req.path}`));
+});
+///////////////////////////////
 
 http.listen(port, () => console.log(`Listening on port ${port}`));
-
 
 const checkWin = (playerMove, computer) => {
   if (playerMove == "rock") {
     switch (computer) {
-      case "scissors": 
+      case "scissors":
         return PLAYER;
-      case "paper": 
+      case "paper":
         return COMPUTER;
       default:
         return TIE;
-      
+
     }
   }
   if (playerMove == "scissors") {
     switch (computer) {
-      case "paper": 
+      case "paper":
         return PLAYER;
-      case "rock": 
+      case "rock":
         return COMPUTER;
       default:
         return TIE;
@@ -64,13 +72,13 @@ const checkWin = (playerMove, computer) => {
   }
   if (playerMove == "paper") {
     switch (computer) {
-      case "rock": 
+      case "rock":
         return PLAYER;
-      case "scissors": 
+      case "scissors":
         return COMPUTER;
       default:
         return TIE;
-      
+
     }
   }
 }
