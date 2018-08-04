@@ -33,8 +33,10 @@ class App extends Component {
     const { myMove, whoWon, command } = this.state.data;
     const emoji = this.getEmoji(myMove);
     if (!myMove) {
-      return <div>
-        <h1>Watting for your move!</h1>
+      return <div style={{margin:"30px"}}>
+        <h1>Rock Paper Scissors</h1>
+        <h2>Watting for your move!</h2>
+        <img src="https://pbs.twimg.com/media/DiUAnW1WAAA2PAk.jpg" width="300px" />
         <h2>Commands (dev)</h2>
         <ul>
           <GameLink host={DEV_SERVER} move="rock"/>
