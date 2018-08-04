@@ -17,11 +17,15 @@ io.on('connection', function (socket) {
   socket.on('disconnect', function () {
     console.log('user disconnected', socket.id);
   });
-  // socket.on('ping', (msg) =>  {
-  //   console.log("ping");
-  //   socket.emit("pong", msg)
-  // })
+  socket.on('message',(msg, data, fn)=>{
+    if (msg == "keepAlive") {
+      fn("I won't kill you :)");
+    }
+  })
 });
+io.on('ping', (socket)=> {
+  console.log('ping...')
+})
 
 app.get('/play/:command/:algo*?', (req, res) => {
   const { command, algo } = req.params;

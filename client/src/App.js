@@ -22,13 +22,8 @@ class App extends Component {
       console.log('got data', data)
       this.setState({data: data, round: this.state.round+1 });
     })
-    // this.socket.on("pong", (data) => {
-    //   console.log('pong', data)
-    // })
-    // // keep alive for heroku
-    // setInterval(()=>this.socket.emit('ping',{status: 'ok'}), 2 * 1000);
-    // window.socket = this.socket
-
+    //to keep the connection alive in heroku env
+    setInterval(()=> this.socket.send('keepAlive',{t: Date.now()}, (msg)=>console.log(msg)), 25 * 1000);
   }
 
   render() {
