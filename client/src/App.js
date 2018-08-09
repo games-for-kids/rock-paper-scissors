@@ -17,16 +17,16 @@ class App extends Component {
   };
 
   componentDidMount() {
-    if (process.env.NODE_ENV == "production") {
+    if (process.env.NODE_ENV === "production") {
       this.socket = io();
     } else {
       this.socket = io("http://localhost:5000");
     }
     this.socket.on("play", (data) => {
       let { playerWins, compuerWins } = this.state;
-      if (data.whoWon == "player") {
+      if (data.whoWon === "player") {
         playerWins++;
-      } else if (data.whoWon == "computer") {
+      } else if (data.whoWon === "computer") {
         compuerWins++;
       }
       this.setState({ data: data, playerWins, compuerWins, round: this.state.round + 1 });
@@ -43,7 +43,7 @@ class App extends Component {
       return <div style={{ margin: "30px" }}>
         <h1>Rock Paper Scissors</h1>
         <h2>Watting for your move!</h2>
-        <img src="https://pbs.twimg.com/media/DiUAnW1WAAA2PAk.jpg" width="300px" />
+        <img alt="Roni & Uri" src="https://pbs.twimg.com/media/DiUAnW1WAAA2PAk.jpg" width="300px" />
         <h2>Commands (dev)</h2>
         <ul>
           <GameLink host={DEV_SERVER} move="rock" />
@@ -70,9 +70,9 @@ class App extends Component {
   }
 
   getEmoji(myMove) {
-    if (myMove == "rock") return ROCK;
-    if (myMove == "paper") return PAPER;
-    if (myMove == "scissors") return SCISSORS;
+    if (myMove === "rock") return ROCK;
+    if (myMove === "paper") return PAPER;
+    if (myMove === "scissors") return SCISSORS;
   }
 }
 
@@ -83,9 +83,9 @@ const TotalScore = ({ playerWins, compuerWins }) =>
   </div>
 
 const Winner = ({ whoWon }) => {
-  if (whoWon == "player") {
+  if (whoWon === "player") {
     return <h1 style={{ color: "green" }}>You Win!</h1>
-  } else if (whoWon == "computer") {
+  } else if (whoWon === "computer") {
     return <h1 style={{ color: "red" }}>I Win!</h1>
   }
   return <h1 style={{ color: "black" }}>No Winner</h1>
