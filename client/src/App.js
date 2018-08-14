@@ -53,6 +53,7 @@ class App extends Component {
         <h2>Watting for your move!</h2>
         <img alt="Roni & Uri" src="https://pbs.twimg.com/media/DiUAnW1WAAA2PAk.jpg" width="300px" />
         <h2>Commands (dev)</h2>
+        <Commands onClick={(command)=>this.play(command)}/>
         <ul>
           <GameLink host={DEV_SERVER} move="rock" />
           <GameLink host={DEV_SERVER} move="paper" />
