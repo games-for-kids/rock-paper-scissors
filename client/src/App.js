@@ -53,7 +53,7 @@ class App extends Component {
         <h2>Watting for your move!</h2>
         <img alt="Roni & Uri" src="https://pbs.twimg.com/media/DiUAnW1WAAA2PAk.jpg" width="300px" />
         <h2>Commands (dev)</h2>
-        <Commands onClick={(command)=>this.play(command)}/>
+        <Commands onClick={(command) => this.play(command)} />
         <ul>
           <GameLink host={DEV_SERVER} move="rock" />
           <GameLink host={DEV_SERVER} move="paper" />
@@ -74,7 +74,7 @@ class App extends Component {
         <div>You played: {this.getEmoji(command)} </div>
         <Winner whoWon={whoWon} />
         <TotalScore playerWins={playerWins} compuerWins={compuerWins} />
-        <Commands onClick={(command)=>this.play(command)}/>
+        <Commands onClick={(command) => this.play(command)} />
       </div>
     );
   }
@@ -86,11 +86,16 @@ class App extends Component {
   }
 }
 
-const TotalScore = ({ playerWins, compuerWins }) =>
-  <div>
-    <div>{`🙎‍♀️ Your score: ${playerWins}`}</div>
-    <div>{`🖥 My score: ${compuerWins}`}</div>
-  </div>
+const TotalScore = ({ playerWins, compuerWins }) => {
+  const playerIcon = playerWins > compuerWins ? '⭐' : ''
+  const computerIcon = playerWins < compuerWins ? '⭐' : ''
+  return (
+    <div>
+      <div>{`🙎‍♀️ Your score: ${playerWins} ${playerIcon}`}</div>
+      <div>{`🖥 My score: ${compuerWins} ${computerIcon}`}</div>
+    </div>)
+}
+
 
 const Winner = ({ whoWon }) => {
   if (whoWon === "player") {
@@ -111,11 +116,11 @@ const GameLink = ({ host, move }) => {
   )
 }
 
-const Commands = ({onClick})=> 
-  <div>
-    <span style={{fontSize:48, marginRight: "20px", cursor: "pointer"}} onClick={e=>onClick('rock')}>{ROCK}</span>
-    <span style={{fontSize:48, marginRight: "20px", cursor: "pointer"}} onClick={e=>onClick('paper')}>{PAPER}</span>
-    <span style={{fontSize:48, marginRight: "20px", cursor: "pointer"}} onClick={e=>onClick('scissors')}>{SCISSORS}</span>
+const Commands = ({ onClick }) =>
+  <div style={{ marginTop: 20 }}>
+    <span style={{ fontSize: 48, marginRight: "20px", cursor: "pointer" }} onClick={e => onClick('rock')}>{ROCK}</span>
+    <span style={{ fontSize: 48, marginRight: "20px", cursor: "pointer" }} onClick={e => onClick('paper')}>{PAPER}</span>
+    <span style={{ fontSize: 48, marginRight: "20px", cursor: "pointer" }} onClick={e => onClick('scissors')}>{SCISSORS}</span>
   </div>
 
 export default App;
