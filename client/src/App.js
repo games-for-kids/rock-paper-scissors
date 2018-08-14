@@ -88,8 +88,8 @@ class App extends Component {
 
 const TotalScore = ({ playerWins, compuerWins }) =>
   <div>
-    <div>{`Your score: ${playerWins}`}</div>
-    <div>{`My score: ${compuerWins}`}</div>
+    <div>{`🙎‍♀️ Your score: ${playerWins}`}</div>
+    <div>{`🖥 My score: ${compuerWins}`}</div>
   </div>
 
 const Winner = ({ whoWon }) => {
