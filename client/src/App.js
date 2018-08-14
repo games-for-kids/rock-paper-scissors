@@ -35,6 +35,14 @@ class App extends Component {
     setInterval(() => this.socket.send('keepAlive', { t: Date.now() }, (msg) => console.log(msg)), 25 * 1000);
   }
 
+  play(command) {
+    if (process.env.NODE_ENV === "production") {
+      fetch(`/play/${command}`)
+    } else {
+      fetch(`http://localhost:5000/play/${command}`)
+    }
+  }
+
   render() {
     const { myMove, whoWon, command } = this.state.data;
     const { round, playerWins, compuerWins } = this.state;
@@ -62,9 +70,10 @@ class App extends Component {
       <div style={{ textAlign: "center" }}>
         <div>Round: {round}</div>
         <div key={round} className="scale" style={{ fontSize: "260px" }}>{emoji}</div>
-        <div>You played: {command} </div>
+        <div>You played: {this.getEmoji(command)} </div>
         <Winner whoWon={whoWon} />
         <TotalScore playerWins={playerWins} compuerWins={compuerWins} />
+        <Commands onClick={(command)=>this.play(command)}/>
       </div>
     );
   }
@@ -101,5 +110,13 @@ const GameLink = ({ host, move }) => {
   )
 }
 
+const Commands = ({onClick})=> 
+  <div>
+    <span style={{fontSize:48, marginRight: "20px", cursor: "pointer"}} onClick={e=>onClick('rock')}>{ROCK}</span>
+    <span style={{fontSize:48, marginRight: "20px", cursor: "pointer"}} onClick={e=>onClick('paper')}>{PAPER}</span>
+    <span style={{fontSize:48, marginRight: "20px", cursor: "pointer"}} onClick={e=>onClick('scissors')}>{SCISSORS}</span>
+  </div>
 
 export default App;
+
+
