@@ -1,0 +1,28 @@
+.col {
+  width: 50%;
+  height: 100%;
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+.command {
+  font-size: 350px;
+  /* height: 400px; */
+  /* height: 200px; */
+  text-align: center;
+}
+
+.result-text {
+  position: fixed;
+  font-weight: bold;
+  left:0px;
+  bottom: 20px;
+  font-size: 100px;
+  width:100%;
+  text-align: center;
+  background-color: gray;
+  padding: 20px;
+}
+
+.result-text span {
+}

@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import io from 'socket.io-client';
 import './App.css';
+import IntroImage from './assets/intro.jpg';
+import GameView from './GameView';
 
 const DEV_SERVER = "http://localhost:5000";
 const PROD_SERVER = 'https://the-game-rock-paper-scissors.herokuapp.com';
@@ -8,11 +10,16 @@ const PROD_SERVER = 'https://the-game-rock-paper-scissors.herokuapp.com';
 const PAPER = "✋";
 const ROCK = "👊";
 const SCISSORS = "✌️";
+
+const IntroBackgroundColor = '#cb8a51';
+
 class App extends Component {
   state = {
     round: 0,
     playerWins: 0,
     compuerWins: 0,
+    started: false,
+    hasData: false,
     data: {},
   };
 
@@ -23,13 +30,16 @@ class App extends Component {
       this.socket = io("http://localhost:5000");
     }
     this.socket.on("play", (data) => {
+      if (!this.state.started) {
+        return false;
+      }
       let { playerWins, compuerWins } = this.state;
       if (data.whoWon === "player") {
         playerWins++;
       } else if (data.whoWon === "computer") {
         compuerWins++;
       }
-      this.setState({ data: data, playerWins, compuerWins, round: this.state.round + 1 });
+      this.setState({ hasData: true, data: data, playerWins, compuerWins, round: this.state.round + 1 });
     })
     //to keep the connection alive in heroku env
     setInterval(() => this.socket.send('keepAlive', { t: Date.now() }, (msg) => console.log(msg)), 25 * 1000);
@@ -45,38 +55,12 @@ class App extends Component {
 
   render() {
     const { myMove, whoWon, command } = this.state.data;
-    const { round, playerWins, compuerWins } = this.state;
+    const { started, hasData } = this.state;
     const emoji = this.getEmoji(myMove);
-    if (!myMove) {
-      return <div style={{ margin: "30px" }}>
-        <h1>Rock Paper Scissors</h1>
-        <h2>Watting for your move!</h2>
-        <img alt="Roni & Uri" src="https://pbs.twimg.com/media/DiUAnW1WAAA2PAk.jpg" width="300px" />
-        <h2>Commands (dev)</h2>
-        <Commands onClick={(command) => this.play(command)} />
-        <ul>
-          <GameLink host={DEV_SERVER} move="rock" />
-          <GameLink host={DEV_SERVER} move="paper" />
-          <GameLink host={DEV_SERVER} move="scissors" />
-        </ul>
-        <h2>Commands (production)</h2>
-        <ul>
-          <GameLink host={PROD_SERVER} move="rock" />
-          <GameLink host={PROD_SERVER} move="paper" />
-          <GameLink host={PROD_SERVER} move="scissors" />
-        </ul>
-      </div>
+    if (!started || !hasData) {
+      return <Intro started={started} startGame={e => this.setState({ started: true })} />
     }
-    return (
-      <div style={{ textAlign: "center" }}>
-        <div>Round: {round}</div>
-        <div key={round} className="scale" style={{ fontSize: "260px" }}>{emoji}</div>
-        <div>You played: {this.getEmoji(command)} </div>
-        <Winner whoWon={whoWon} />
-        <TotalScore playerWins={playerWins} compuerWins={compuerWins} />
-        <Commands onClick={(command) => this.play(command)} />
-      </div>
-    );
+    return <GameView player={this.getEmoji(command)} computer={this.getEmoji(myMove)} whoWon={whoWon} />
   }
 
   getEmoji(myMove) {
@@ -85,6 +69,49 @@ class App extends Component {
     if (myMove === "scissors") return SCISSORS;
   }
 }
+
+const Intro = ({ startGame, started }) =>
+  <div style={{ backgroundColor: IntroBackgroundColor }}>
+    <img
+      style={{ margin: '0 auto', display: 'block' }}
+      src={IntroImage}
+      height={window.screen.availHeight - 80} />
+    <div style={{
+      position: "absolute",
+      zIndex: 10000,
+      top: 550,
+      width: "100%"
+    }}>
+      {!started &&
+        <div onClick={e => startGame()}
+          style={{
+            padding: 20,
+            backgroundColor: "blue",
+            width: 200,
+            color: "white",
+            border: "1px solid white",
+            borderRadius: "5px",
+            margin: '0 auto',
+            textAlign: "center",
+            cursor: "pointer",
+          }}
+        >START</div>}
+      {started && 
+        <div onClick={e => startGame()}
+        style={{
+          padding: 20,
+          backgroundColor: "green",
+          width: 200,
+          color: "white",
+          border: "1px solid white",
+          borderRadius: "5px",
+          margin: '0 auto',
+          textAlign: "center",
+        }}
+      >Waiting For Your Move</div>}
+      }
+    </div>
+  </div>
 
 const TotalScore = ({ playerWins, compuerWins }) => {
   const playerIcon = playerWins > compuerWins ? '⭐' : ''
@@ -96,32 +123,6 @@ const TotalScore = ({ playerWins, compuerWins }) => {
     </div>)
 }
 
-
-const Winner = ({ whoWon }) => {
-  if (whoWon === "player") {
-    return <h1 style={{ color: "green" }}>You Win!</h1>
-  } else if (whoWon === "computer") {
-    return <h1 style={{ color: "red" }}>I Win!</h1>
-  }
-  return <h1 style={{ color: "black" }}>No Winner</h1>
-}
-
-
-const GameLink = ({ host, move }) => {
-  const url = `${host}/play/${move}`
-  return (
-    <li>
-      <a href={url} target={move}>{`curl '${url}'`}</a>
-    </li>
-  )
-}
-
-const Commands = ({ onClick }) =>
-  <div style={{ marginTop: 20 }}>
-    <span style={{ fontSize: 48, marginRight: "20px", cursor: "pointer" }} onClick={e => onClick('rock')}>{ROCK}</span>
-    <span style={{ fontSize: 48, marginRight: "20px", cursor: "pointer" }} onClick={e => onClick('paper')}>{PAPER}</span>
-    <span style={{ fontSize: 48, marginRight: "20px", cursor: "pointer" }} onClick={e => onClick('scissors')}>{SCISSORS}</span>
-  </div>
 
 export default App;
 
