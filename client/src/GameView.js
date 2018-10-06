@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './GameView.css';
 
 
-export default ({player, computer, whoWon})=>
+export default ({player, computer, whoWon, round})=>
   <div style={{display:'inline-block', width:'100%'}}>
     <Col title="HBP-9000" color="red" bgColor='rgba(255,0,0,0.05)' command={computer} />
     <Col title="You" color="blue" bgColor='rgba(0,0,255,0.05)' command={player} />
@@ -14,7 +14,7 @@ export default ({player, computer, whoWon})=>
 const Col = ({title, color, bgColor, command})=>
   <div className="col" style={{border: `4px solid ${color}`, backgroundColor: bgColor}}>
     <h1 style={{textAlign: 'center'}}>{title}</h1>
-    <div className="command">{command}</div>
+    <div className="command scale">{command}</div>
   </div>
 
 const Result = ({whoWon}) => {

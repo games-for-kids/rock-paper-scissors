@@ -55,12 +55,12 @@ class App extends Component {
 
   render() {
     const { myMove, whoWon, command } = this.state.data;
-    const { started, hasData } = this.state;
+    const { started, hasData, round } = this.state;
     const emoji = this.getEmoji(myMove);
     if (!started || !hasData) {
       return <Intro started={started} startGame={e => this.setState({ started: true })} />
     }
-    return <GameView player={this.getEmoji(command)} computer={this.getEmoji(myMove)} whoWon={whoWon} />
+    return <GameView key={`round-${round}`} player={this.getEmoji(command)} computer={this.getEmoji(myMove)} whoWon={whoWon} />
   }
 
   getEmoji(myMove) {
