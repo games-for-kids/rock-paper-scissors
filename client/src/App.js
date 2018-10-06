@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import io from 'socket.io-client';
 import './App.css';
-import IntroImage from './assets/intro.jpg';
 import GameView from './GameView';
 
 const DEV_SERVER = "http://localhost:5000";
@@ -11,7 +10,6 @@ const PAPER = "✋";
 const ROCK = "👊";
 const SCISSORS = "✌️";
 
-const IntroBackgroundColor = '#cb8a51';
 
 class App extends Component {
   state = {
@@ -20,6 +18,7 @@ class App extends Component {
     compuerWins: 0,
     started: false,
     hasData: false,
+    showComputerState: false,
     data: {},
   };
 
@@ -30,16 +29,13 @@ class App extends Component {
       this.socket = io("http://localhost:5000");
     }
     this.socket.on("play", (data) => {
-      if (!this.state.started) {
-        return false;
-      }
       let { playerWins, compuerWins } = this.state;
       if (data.whoWon === "player") {
         playerWins++;
       } else if (data.whoWon === "computer") {
         compuerWins++;
       }
-      this.setState({ hasData: true, data: data, playerWins, compuerWins, round: this.state.round + 1 });
+      this.setState({ showComputerState: this.state.started ,hasData: true, data: data, playerWins, compuerWins, round: this.state.round + 1 });
     })
     //to keep the connection alive in heroku env
     setInterval(() => this.socket.send('keepAlive', { t: Date.now() }, (msg) => console.log(msg)), 25 * 1000);
@@ -55,12 +51,24 @@ class App extends Component {
 
   render() {
     const { myMove, whoWon, command } = this.state.data;
-    const { started, hasData, round } = this.state;
+    const { started, hasData, round, showComputerState } = this.state;
     const emoji = this.getEmoji(myMove);
     if (!started || !hasData) {
-      return <Intro started={started} startGame={e => this.setState({ started: true })} />
+      // return <Intro started={started} startGame={e => this.setState({ started: true })} />
+      return <GameView 
+                key={`round-${round}`}
+                startGame={e=>this.setState({started: true})}
+                started={started}
+                player={this.getEmoji(command)}
+                ready={false} />
     }
-    return <GameView key={`round-${round}`} player={this.getEmoji(command)} computer={this.getEmoji(myMove)} whoWon={whoWon} />
+    return <GameView key={`round-${round}`}
+                     player={this.getEmoji(command)}
+                     computer={this.getEmoji(myMove)}
+                     whoWon={whoWon}
+                     ready={showComputerState}
+                     started={started}
+                      />
   }
 
   getEmoji(myMove) {
@@ -69,49 +77,6 @@ class App extends Component {
     if (myMove === "scissors") return SCISSORS;
   }
 }
-
-const Intro = ({ startGame, started }) =>
-  <div style={{ backgroundColor: IntroBackgroundColor }}>
-    <img
-      style={{ margin: '0 auto', display: 'block' }}
-      src={IntroImage}
-      height={window.screen.availHeight - 80} />
-    <div style={{
-      position: "absolute",
-      zIndex: 10000,
-      top: 550,
-      width: "100%"
-    }}>
-      {!started &&
-        <div onClick={e => startGame()}
-          style={{
-            padding: 20,
-            backgroundColor: "blue",
-            width: 200,
-            color: "white",
-            border: "1px solid white",
-            borderRadius: "5px",
-            margin: '0 auto',
-            textAlign: "center",
-            cursor: "pointer",
-          }}
-        >START</div>}
-      {started && 
-        <div onClick={e => startGame()}
-        style={{
-          padding: 20,
-          backgroundColor: "green",
-          width: 200,
-          color: "white",
-          border: "1px solid white",
-          borderRadius: "5px",
-          margin: '0 auto',
-          textAlign: "center",
-        }}
-      >Waiting For Your Move</div>}
-      }
-    </div>
-  </div>
 
 const TotalScore = ({ playerWins, compuerWins }) => {
   const playerIcon = playerWins > compuerWins ? '⭐' : ''
